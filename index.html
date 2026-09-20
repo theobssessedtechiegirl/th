@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DevTrack — Developer Progress Platform</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ===================== SIDEBAR (desktop/tablet) ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__brand">
+      <span class="sidebar__logo"><i class="fa-solid fa-code"></i></span>
+      <span class="sidebar__name">DevTrack</span>
+    </div>
+
+    <nav class="sidebar__nav" aria-label="Primary">
+      <ul class="nav-list" id="navList">
+        <li class="nav-item is-active" data-view="dashboard">
+          <button class="nav-link" data-view="dashboard">
+            <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+          </button>
+        </li>
+        <li class="nav-item" data-view="projects">
+          <button class="nav-link" data-view="projects">
+            <i class="fa-solid fa-diagram-project"></i><span>Projects</span>
+          </button>
+        </li>
+        <li class="nav-item" data-view="learning">
+          <button class="nav-link" data-view="learning">
+            <i class="fa-solid fa-book-open"></i><span>Learning</span>
+          </button>
+        </li>
+        <li class="nav-item" data-view="goals">
+          <button class="nav-link" data-view="goals">
+            <i class="fa-solid fa-bullseye"></i><span>Goals</span>
+          </button>
+        </li>
+        <li class="nav-item" data-view="skills">
+          <button class="nav-link" data-view="skills">
+            <i class="fa-solid fa-layer-group"></i><span>Skills</span>
+          </button>
+        </li>
+        <li class="nav-item" data-view="activity">
+          <button class="nav-link" data-view="activity">
+            <i class="fa-solid fa-clock-rotate-left"></i><span>Activity</span>
+          </button>
+        </li>
+        <li class="nav-item" data-view="profile">
+          <button class="nav-link" data-view="profile">
+            <i class="fa-solid fa-id-badge"></i><span>Profile</span>
+          </button>
+        </li>
+        <li class="nav-item" data-view="settings">
+          <button class="nav-link" data-view="settings">
+            <i class="fa-solid fa-gear"></i><span>Settings</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar__footer">
+      <button class="theme-toggle" id="themeToggleSidebar" aria-label="Toggle color theme">
+        <i class="fa-solid fa-moon"></i><span>Dark mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===================== TOP BAR ===================== -->
+  <header class="topbar">
+    <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h1 class="topbar__title" id="viewTitle">Dashboard</h1>
+
+    <div class="topbar__actions">
+      <button class="icon-btn" id="themeToggleTop" aria-label="Toggle color theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+      <button class="avatar-btn" id="profileShortcut" aria-label="Go to profile">
+        <span class="avatar" id="topAvatar">DT</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <main class="content" id="content">
+
+    <!-- ---------- DASHBOARD VIEW ---------- -->
+    <section class="view is-active" id="view-dashboard" data-view-panel="dashboard">
+      <div class="view-header">
+        <div>
+          <p class="view-header__eyebrow" id="dashDate">—</p>
+          <h2 class="view-header__title" id="dashWelcome">Welcome back</h2>
+        </div>
+        <div class="clock" id="dashClock">--:--:--</div>
+      </div>
+
+      <div class="stat-grid" id="statGrid"></div>
+
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel__head">
+            <h3>Overall development progress</h3>
+          </div>
+          <div class="overall-progress" id="overallProgress">
+            <div class="ring" id="progressRing">
+              <span class="ring__value" id="progressRingValue">0%</span>
+            </div>
+            <ul class="progress-breakdown" id="progressBreakdown"></ul>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head">
+            <h3>Recent activity</h3>
+            <button class="link-btn" data-view="activity">View all</button>
+          </div>
+          <ul class="activity-list" id="dashActivityList"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- PROJECTS VIEW ---------- -->
+    <section class="view" id="view-projects" data-view-panel="projects">
+      <div class="view-header">
+        <div>
+          <p class="view-header__eyebrow">Projects</p>
+          <h2 class="view-header__title">Your coding projects</h2>
+        </div>
+        <button class="btn btn--primary" id="addProjectBtn">
+          <i class="fa-solid fa-plus"></i> New project
+        </button>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-field">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="search" id="projectSearch" placeholder="Search projects by name…" />
+        </div>
+        <select class="select" id="projectStatusFilter">
+          <option value="all">All statuses</option>
+          <option value="planned">Planned</option>
+          <option value="in-progress">In progress</option>
+          <option value="completed">Completed</option>
+          <option value="on-hold">On hold</option>
+        </select>
+        <select class="select" id="projectTechFilter">
+          <option value="all">All technologies</option>
+        </select>
+      </div>
+
+      <div class="card-grid" id="projectGrid"></div>
+      <p class="empty-state" id="projectEmptyState" hidden>
+        <i class="fa-solid fa-diagram-project"></i>
+        <span>No projects match yet. Start by creating your first project.</span>
+      </p>
+    </section>
+
+    <!-- ---------- LEARNING VIEW ---------- -->
+    <section class="view" id="view-learning" data-view-panel="learning">
+      <div class="view-header">
+        <div>
+          <p class="view-header__eyebrow">Learning</p>
+          <h2 class="view-header__title">Your learning journey</h2>
+        </div>
+        <button class="btn btn--primary" id="addLearningBtn">
+          <i class="fa-solid fa-plus"></i> Add topic
+        </button>
+      </div>
+
+      <div class="stat-grid stat-grid--compact" id="learningStatGrid"></div>
+
+      <div class="list-panel">
+        <ul class="topic-list" id="learningList"></ul>
+        <p class="empty-state" id="learningEmptyState" hidden>
+          <i class="fa-solid fa-book-open"></i>
+          <span>No topics yet. Add what you're learning to start tracking progress.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ---------- GOALS VIEW ---------- -->
+    <section class="view" id="view-goals" data-view-panel="goals">
+      <div class="view-header">
+        <div>
+          <p class="view-header__eyebrow">Goals</p>
+          <h2 class="view-header__title">Development goals</h2>
+        </div>
+        <button class="btn btn--primary" id="addGoalBtn">
+          <i class="fa-solid fa-plus"></i> New goal
+        </button>
+      </div>
+
+      <div class="segmented" id="goalFilter" role="tablist">
+        <button class="segmented__btn is-active" data-filter="all">All</button>
+        <button class="segmented__btn" data-filter="active">Active</button>
+        <button class="segmented__btn" data-filter="completed">Completed</button>
+      </div>
+
+      <div class="card-grid" id="goalGrid"></div>
+      <p class="empty-state" id="goalEmptyState" hidden>
+        <i class="fa-solid fa-bullseye"></i>
+        <span>No goals here yet. Set one to give your progress direction.</span>
+      </p>
+    </section>
+
+    <!-- ---------- SKILLS VIEW ---------- -->
+    <section class="view" id="view-skills" data-view-panel="skills">
+      <div class="view-header">
+        <div>
+          <p class="view-header__eyebrow">Skills</p>
+          <h2 class="view-header__title">Technical skills</h2>
+        </div>
+        <button class="btn btn--primary" id="addSkillBtn">
+          <i class="fa-solid fa-plus"></i> Add skill
+        </button>
+      </div>
+
+      <div class="skills-columns" id="skillsColumns"></div>
+      <p class="empty-state" id="skillsEmptyState" hidden>
+        <i class="fa-solid fa-layer-group"></i>
+        <span>No skills added yet. Add a skill to start tracking proficiency.</span>
+      </p>
+    </section>
+
+    <!-- ---------- ACTIVITY VIEW ---------- -->
+    <section class="view" id="view-activity" data-view-panel="activity">
+      <div class="view-header">
+        <div>
+          <p class="view-header__eyebrow">Activity</p>
+          <h2 class="view-header__title">Activity log</h2>
+        </div>
+        <button class="btn btn--secondary" id="addActivityBtn">
+          <i class="fa-solid fa-plus"></i> Log activity
+        </button>
+      </div>
+
+      <ul class="activity-list activity-list--full" id="fullActivityList"></ul>
+      <p class="empty-state" id="activityEmptyState" hidden>
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Nothing logged yet. Your actions will also appear here automatically.</span>
+      </p>
+    </section>
+
+    <!-- ---------- PROFILE VIEW ---------- -->
+    <section class="view" id="view-profile" data-view-panel="profile">
+      <div class="view-header">
+        <div>
+          <p class="view-header__eyebrow">Profile</p>
+          <h2 class="view-header__title">Developer profile</h2>
+        </div>
+        <button class="btn btn--primary" id="editProfileBtn">
+          <i class="fa-solid fa-pen"></i> Edit profile
+        </button>
+      </div>
+
+      <div class="profile-card" id="profileCard"></div>
+    </section>
+
+    <!-- ---------- SETTINGS VIEW ---------- -->
+    <section class="view" id="view-settings" data-view-panel="settings">
+      <div class="view-header">
+        <div>
+          <p class="view-header__eyebrow">Settings</p>
+          <h2 class="view-header__title">Preferences</h2>
+        </div>
+      </div>
+
+      <div class="settings-list">
+        <div class="settings-row">
+          <div>
+            <h3>Appearance</h3>
+            <p>Switch between light and dark mode. Your choice is remembered.</p>
+          </div>
+          <button class="btn btn--secondary" id="settingsThemeBtn">
+            <i class="fa-solid fa-moon"></i> <span id="settingsThemeLabel">Switch to dark</span>
+          </button>
+        </div>
+
+        <div class="settings-row">
+          <div>
+            <h3>Profile</h3>
+            <p>Update your name, bio, level and links.</p>
+          </div>
+          <button class="btn btn--secondary" data-view="profile">Manage profile</button>
+        </div>
+
+        <div class="settings-row settings-row--danger">
+          <div>
+            <h3>Clear local data</h3>
+            <p>Permanently erase all DevTrack data stored in this browser. This cannot be undone.</p>
+          </div>
+          <button class="btn btn--danger" id="clearDataBtn">
+            <i class="fa-solid fa-trash"></i> Clear all data
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== MOBILE BOTTOM NAV (inline links) ===================== -->
+  <nav class="bottom-nav" aria-label="Primary mobile">
+    <button class="bottom-nav__link is-active" data-view="dashboard"><i class="fa-solid fa-gauge-high"></i><span>Home</span></button>
+    <button class="bottom-nav__link" data-view="projects"><i class="fa-solid fa-diagram-project"></i><span>Projects</span></button>
+    <button class="bottom-nav__link" data-view="learning"><i class="fa-solid fa-book-open"></i><span>Learning</span></button>
+    <button class="bottom-nav__link" data-view="goals"><i class="fa-solid fa-bullseye"></i><span>Goals</span></button>
+    <button class="bottom-nav__link" data-view="skills"><i class="fa-solid fa-layer-group"></i><span>Skills</span></button>
+    <button class="bottom-nav__link" data-view="more"><i class="fa-solid fa-ellipsis"></i><span>More</span></button>
+  </nav>
+
+  <!-- "More" sheet for mobile items that don't fit the bottom bar -->
+  <div class="sheet" id="moreSheet" hidden>
+    <div class="sheet__panel">
+      <button class="sheet__item" data-view="activity"><i class="fa-solid fa-clock-rotate-left"></i> Activity</button>
+      <button class="sheet__item" data-view="profile"><i class="fa-solid fa-id-badge"></i> Profile</button>
+      <button class="sheet__item" data-view="settings"><i class="fa-solid fa-gear"></i> Settings</button>
+      <button class="sheet__item sheet__item--close" id="closeMoreSheet">Close</button>
+    </div>
+  </div>
+
+  <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
+</div>
+
+<!-- ===================== MODAL ROOT ===================== -->
+<div class="modal-overlay" id="modalOverlay" hidden>
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="modal__head">
+      <h3 id="modalTitle">Title</h3>
+      <button class="icon-btn" id="modalClose" aria-label="Close dialog"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal__body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ===================== CONFIRM DIALOG ===================== -->
+<div class="modal-overlay" id="confirmOverlay" hidden>
+  <div class="modal modal--small" role="alertdialog" aria-modal="true">
+    <div class="modal__head">
+      <h3 id="confirmTitle">Are you sure?</h3>
+    </div>
+    <div class="modal__body">
+      <p id="confirmMessage">This action cannot be undone.</p>
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="confirmCancel">Cancel</button>
+        <button class="btn btn--danger" id="confirmAccept">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TOASTS ===================== -->
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
