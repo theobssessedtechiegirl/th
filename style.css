@@ -960,7 +960,7 @@ a { color: var(--accent-strong); }
   }
   .sheet__panel {
     position: absolute;
-    bottom: 2;
+    bottom: 0;
     left: 0;
     right: 0;
     background: var(--bg-elevated);
