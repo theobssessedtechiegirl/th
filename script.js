@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /* =========================================================================
    1. APPLICATION STATE
@@ -11,9 +11,9 @@ const STORAGE_KEY = 'devtrack_data_v1';
 
 const DEFAULT_STATE = {
   user: {
-    name: 'New Developer',
-    username: 'devuser',
-    bio: 'Tell the world what you build.',
+    name: '',
+    username: '',
+    bio: '',
     level: 'Beginner',
     github: '',
     linkedin: '',
@@ -288,6 +288,20 @@ function renderTopAvatar() {
 
 function renderProfile() {
   const { user } = appState;
+
+  if (!user.name) {
+    dom.profileCard.innerHTML = `
+      <p class="empty-state" style="grid-column: 1 / -1;">
+        <i class="fa-solid fa-id-badge"></i>
+        <span>You haven't set up your developer profile yet.</span>
+        <button class="btn btn--primary" data-action="create-profile">
+          <i class="fa-solid fa-plus"></i> Create your profile
+        </button>
+      </p>
+    `;
+    return;
+  }
+
   const links = [
     { key: 'github', icon: 'fa-brands fa-github', label: 'GitHub' },
     { key: 'linkedin', icon: 'fa-brands fa-linkedin', label: 'LinkedIn' },
@@ -1333,10 +1347,24 @@ function closeMoreSheetPanel() {
    ========================================================================= */
 
 function setupNavigationListeners() {
-  dom.navList.addEventListener('click', (event) => {
-    const link = event.target.closest('.nav-link');
-    if (link) navigateTo(link.dataset.view);
-  });
+  // Bound first and independently: this is the mobile menu button, and it
+  // must not be skipped if something later in this function throws.
+  if (dom.sidebarToggle && dom.sidebar && dom.sidebarScrim) {
+    dom.sidebarToggle.addEventListener('click', () => {
+      const isOpen = dom.sidebar.classList.toggle('is-open');
+      dom.sidebarScrim.hidden = !isOpen;
+      if (isOpen) dom.sidebarScrim.setAttribute('data-open', '');
+      else dom.sidebarScrim.removeAttribute('data-open');
+    });
+  }
+  if (dom.sidebarScrim) dom.sidebarScrim.addEventListener('click', closeSidebarOnMobile);
+
+  if (dom.navList) {
+    dom.navList.addEventListener('click', (event) => {
+      const link = event.target.closest('.nav-link');
+      if (link) navigateTo(link.dataset.view);
+    });
+  }
 
   document.querySelectorAll('[data-view]').forEach((el) => {
     if (el.closest('#navList') || el.closest('.bottom-nav')) return;
@@ -1353,20 +1381,14 @@ function setupNavigationListeners() {
     });
   });
 
-  dom.moreSheet.addEventListener('click', (event) => {
-    const item = event.target.closest('.sheet__item[data-view]');
-    if (item) navigateTo(item.dataset.view);
-    if (event.target === dom.moreSheet) closeMoreSheetPanel();
-  });
-  dom.closeMoreSheet.addEventListener('click', closeMoreSheetPanel);
-
-  dom.sidebarToggle.addEventListener('click', () => {
-    const isOpen = dom.sidebar.classList.toggle('is-open');
-    dom.sidebarScrim.hidden = !isOpen;
-    if (isOpen) dom.sidebarScrim.setAttribute('data-open', '');
-    else dom.sidebarScrim.removeAttribute('data-open');
-  });
-  dom.sidebarScrim.addEventListener('click', closeSidebarOnMobile);
+  if (dom.moreSheet) {
+    dom.moreSheet.addEventListener('click', (event) => {
+      const item = event.target.closest('.sheet__item[data-view]');
+      if (item) navigateTo(item.dataset.view);
+      if (event.target === dom.moreSheet) closeMoreSheetPanel();
+    });
+  }
+  if (dom.closeMoreSheet) dom.closeMoreSheet.addEventListener('click', closeMoreSheetPanel);
 }
 
 function setupThemeListeners() {
@@ -1507,6 +1529,9 @@ function setupActivityListeners() {
 
 function setupProfileListeners() {
   dom.editProfileBtn.addEventListener('click', openEditProfileModal);
+  dom.profileCard.addEventListener('click', (event) => {
+    if (event.target.closest('[data-action="create-profile"]')) openEditProfileModal();
+  });
 }
 
 function setupSettingsListeners() {
@@ -1519,17 +1544,25 @@ function setupSettingsListeners() {
   });
 }
 
+function runSafely(label, fn) {
+  try {
+    fn();
+  } catch (error) {
+    console.error(`DevTrack init step failed: ${label}`, error);
+  }
+}
+
 function setupAllEventListeners() {
-  setupNavigationListeners();
-  setupThemeListeners();
-  setupModalListeners();
-  setupProjectListeners();
-  setupLearningListeners();
-  setupGoalListeners();
-  setupSkillListeners();
-  setupActivityListeners();
-  setupProfileListeners();
-  setupSettingsListeners();
+  runSafely('navigation', setupNavigationListeners);
+  runSafely('theme', setupThemeListeners);
+  runSafely('modal', setupModalListeners);
+  runSafely('projects', setupProjectListeners);
+  runSafely('learning', setupLearningListeners);
+  runSafely('goals', setupGoalListeners);
+  runSafely('skills', setupSkillListeners);
+  runSafely('activity', setupActivityListeners);
+  runSafely('profile', setupProfileListeners);
+  runSafely('settings', setupSettingsListeners);
 }
 
 /* =========================================================================
@@ -1556,12 +1589,14 @@ function renderAll() {
 
 function initApp() {
   appState = loadData();
-  setupAllEventListeners();
-  renderAll();
-  navigateTo('dashboard');
+  runSafely('event listeners', setupAllEventListeners);
+  runSafely('initial render', renderAll);
+  runSafely('initial navigation', () => navigateTo('dashboard'));
 
-  updateClock();
-  uiState.clockIntervalId = setInterval(updateClock, 1000);
+  runSafely('clock', () => {
+    updateClock();
+    uiState.clockIntervalId = setInterval(updateClock, 1000);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
