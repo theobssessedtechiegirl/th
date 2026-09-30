@@ -9,7 +9,8 @@
 
 const STORAGE_KEY = 'devtrack_data_v1';
 
-const DEFAULT_STATE =
+const DEFAULT_STATE = {
+  user: {
     name: '',
     username: '',
     bio: '',
