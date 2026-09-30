@@ -978,7 +978,7 @@ a { color: var(--accent-strong); }
     font-size: 15px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    
     border-radius: var(--radius-sm);
   }
   .sheet__item:hover { background: var(--bg-inset); }
