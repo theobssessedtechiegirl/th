@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /* =========================================================================
    1. APPLICATION STATE
@@ -50,6 +50,8 @@ const uiState = {
 
 const dom = {
   sidebar: document.getElementById('sidebar'),
+  sidebarToggle: document.getElementById('sidebarToggle'),
+  sidebarScrim: document.getElementById('sidebarScrim'),
   navList: document.getElementById('navList'),
   viewTitle: document.getElementById('viewTitle'),
   themeToggleSidebar: document.getElementById('themeToggleSidebar'),
@@ -1318,7 +1320,14 @@ function navigateTo(view) {
   });
 
   dom.viewTitle.textContent = VIEW_TITLES[view];
+  closeSidebarOnMobile();
   closeMoreSheetPanel();
+}
+
+function closeSidebarOnMobile() {
+  dom.sidebar.classList.remove('is-open');
+  dom.sidebarScrim.removeAttribute('data-open');
+  dom.sidebarScrim.hidden = true;
 }
 
 function openMoreSheetPanel() {
@@ -1338,6 +1347,18 @@ function closeMoreSheetPanel() {
    ========================================================================= */
 
 function setupNavigationListeners() {
+  // Bound first and independently: this is the mobile menu button, and it
+  // must not be skipped if something later in this function throws.
+  if (dom.sidebarToggle && dom.sidebar && dom.sidebarScrim) {
+    dom.sidebarToggle.addEventListener('click', () => {
+      const isOpen = dom.sidebar.classList.toggle('is-open');
+      dom.sidebarScrim.hidden = !isOpen;
+      if (isOpen) dom.sidebarScrim.setAttribute('data-open', '');
+      else dom.sidebarScrim.removeAttribute('data-open');
+    });
+  }
+  if (dom.sidebarScrim) dom.sidebarScrim.addEventListener('click', closeSidebarOnMobile);
+
   if (dom.navList) {
     dom.navList.addEventListener('click', (event) => {
       const link = event.target.closest('.nav-link');
