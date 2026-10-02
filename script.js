@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 /* =========================================================================
    1. APPLICATION STATE
@@ -50,10 +50,10 @@ const uiState = {
 
 const dom = {
   sidebar: document.getElementById('sidebar'),
-  sidebarToggle: document.getElementById('sidebarToggle'),
-  sidebarScrim: document.getElementById('sidebarScrim'),
   navList: document.getElementById('navList'),
   viewTitle: document.getElementById('viewTitle'),
+  sidebarToggle: document.getElementById('sidebarToggle'),
+  sidebarScrim: document.getElementById('sidebarScrim'),
   themeToggleSidebar: document.getElementById('themeToggleSidebar'),
   themeToggleTop: document.getElementById('themeToggleTop'),
   profileShortcut: document.getElementById('profileShortcut'),
@@ -1325,6 +1325,7 @@ function navigateTo(view) {
 }
 
 function closeSidebarOnMobile() {
+  if (!dom.sidebar || !dom.sidebarScrim) return;
   dom.sidebar.classList.remove('is-open');
   dom.sidebarScrim.removeAttribute('data-open');
   dom.sidebarScrim.hidden = true;
